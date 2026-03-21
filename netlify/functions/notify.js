@@ -28,12 +28,9 @@ exports.handler = async function (event) {
   };
   const industryLabel = industryLabels[industry] || industry;
 
-  const CALENDLY_URL       = 'https://calendly.com/matthewalighieri';
-  const RESEND_API_KEY     = process.env.RESEND_API_KEY;
-  const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-  const TWILIO_AUTH_TOKEN  = process.env.TWILIO_AUTH_TOKEN;
-  const TWILIO_FROM        = process.env.TWILIO_FROM_NUMBER;
-  const MATTHEW_PHONE      = process.env.MATTHEW_PHONE;
+  const CALENDLY_URL   = 'https://calendly.com/matthewalighieri';
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  const NOTIFY_EMAIL   = process.env.NOTIFY_EMAIL || 'matthewalighieri@gmail.com';
 
   const errors = [];
 
@@ -48,7 +45,7 @@ exports.handler = async function (event) {
         },
         body: JSON.stringify({
           from: 'AI Readiness Score <onboarding@resend.dev>',
-          to: 'matthewalighieri@gmail.com',
+          to: NOTIFY_EMAIL,
           subject: `Priority lead — ${name} scored ${score}/100`,
           html: `
             <div style="font-family:-apple-system,sans-serif;max-width:560px;margin:0 auto;color:#1E293B;">
@@ -97,27 +94,7 @@ exports.handler = async function (event) {
     }
   }
 
-  // ── SMS via Twilio ───────────────────────────────────────────────────────────
-  if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && TWILIO_FROM && MATTHEW_PHONE) {
-    try {
-      const body = `Priority lead: ${name} scored ${score}/100 (${industryLabel}). Email: ${email}. Book: ${CALENDLY_URL}`;
-      const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
-      const res  = await fetch(
-        `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${auth}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: new URLSearchParams({ To: MATTHEW_PHONE, From: TWILIO_FROM, Body: body }).toString()
-        }
-      );
-      if (!res.ok) errors.push('sms:' + await res.text());
-    } catch (e) {
-      errors.push('sms:' + e.message);
-    }
-  }
+  // ── SMS via Twilio — coming soon (pending A2P registration) ─────────────────
 
   return {
     statusCode: 200,
