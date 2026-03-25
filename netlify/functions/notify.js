@@ -15,6 +15,8 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
+  const leadLabel = score >= 76 ? 'Priority lead' : score >= 51 ? 'Warm lead' : 'New lead';
+
   const industryLabels = {
     'tourism':               'Tourism / Hospitality / Outdoor',
     'home-services':         'Home Services',
@@ -46,11 +48,11 @@ exports.handler = async function (event) {
         body: JSON.stringify({
           from: 'AI Readiness Score <onboarding@resend.dev>',
           to: NOTIFY_EMAIL,
-          subject: `Priority lead — ${name} scored ${score}/100`,
+          subject: `${leadLabel} — ${name} scored ${score}/100`,
           html: `
             <div style="font-family:-apple-system,sans-serif;max-width:560px;margin:0 auto;color:#1E293B;">
               <div style="background:#0F2340;padding:24px 28px;border-radius:12px 12px 0 0;">
-                <p style="color:#00B896;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 6px;">Priority Lead</p>
+                <p style="color:#00B896;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 6px;">${leadLabel}</p>
                 <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0;letter-spacing:-0.02em;">
                   ${name} scored ${score}/100
                 </h1>
@@ -82,7 +84,7 @@ exports.handler = async function (event) {
                     Book Their Call →
                   </a>
                 </div>
-                <p style="color:#94A3B8;font-size:11px;margin-top:20px;">AI Readiness Score · Lakes Region Growth Studio</p>
+                <p style="color:#94A3B8;font-size:11px;margin-top:20px;">AI Readiness Score · New England Growth Studio</p>
               </div>
             </div>
           `

@@ -412,7 +412,7 @@
 
 <header class="header">
   <div class="logo">AI Readiness <span>Score</span></div>
-  <div class="header-sub">by Lakes Region Growth Studio</div>
+  <div class="header-sub">by New England Growth Studio</div>
 </header>
 
 <div class="progress-bar-wrap" id="progressWrap">
@@ -496,7 +496,7 @@
           <div class="hw-eyebrow">Built for your industry</div>
           <div class="hw-title">We built something specifically for you.</div>
           <p class="hw-text">Headwaters is a proprietary marketing mix modeling tool that shows tourism and hospitality businesses in the Lakes Region exactly which channels are driving their bookings — so you stop guessing and put your budget where it actually works.</p>
-          <a href="https://headwaters.streamlit.app" target="_blank" class="btn-hw">See Headwaters in Action →</a>
+          <a href="https://getheadwatersapp.netlify.app" target="_blank" class="btn-hw">Get Access to Headwaters →</a>
         </div>
 
         <div id="result-cta"></div>
@@ -508,7 +508,7 @@
 </div>
 
 <footer>
-  <a href="https://lakesregiongrowthstudio.com">Lakes Region Growth Studio</a>
+  <a href="https://newenglandgrowthstudio.com">New England Growth Studio</a>
   &nbsp;·&nbsp; Lakes Region, New Hampshire
 </footer>
 
@@ -627,7 +627,7 @@
       badgeClass: 'tier-0',
       headline: 'Your foundation needs work before AI can help.',
       message: "The good news: the gaps are fixable. Most businesses in your position need to get basic systems and data in place first — and that's exactly where to start. Grab our free guide.",
-      cta: `<a href="#" class="btn btn-navy" style="display:inline-flex;">Get the Free AI Readiness Guide →</a>`
+      cta: `<a href="https://calendly.com/matthewalighieri" target="_blank" class="btn btn-navy" style="display:inline-flex;">Book a Free 15-Minute Call →</a>`
     },
     {
       label: 'Almost There',
@@ -779,17 +779,15 @@
       document.getElementById('hw-callout').classList.add('visible');
     }
 
-    // Notify Matthew for priority leads (76–100)
-    if (score >= 76) {
-      try {
-        await fetch('/.netlify/functions/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, score, industry })
-        });
-      } catch (_) {
-        // Silent — never breaks the user experience
-      }
+    // Notify Matthew for all leads
+    try {
+      await fetch('/.netlify/functions/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, score, industry, tier: tData.label })
+      });
+    } catch (_) {
+      // Silent — never breaks the user experience
     }
   }
 </script>
