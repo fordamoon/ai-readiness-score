@@ -3,29 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Readiness Score — Find Out Where You Stand</title>
+  <title>New England Growth Studio — How AI-Ready Is Your Business?</title>
   <meta name="description" content="10 questions. 3 minutes. A clear, honest score — and a specific next step for your business.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Tokens ── */
     :root {
-      --bg:           #070D19;
-      --surface:      #0C1829;
-      --surface-2:    #111F34;
-      --navy:         #0F2340;
-      --teal:         #00B896;
-      --teal-dark:    #009E82;
-      --teal-glow:    rgba(0,184,150,0.18);
-      --white:        #FFFFFF;
-      --text:         #F1F5F9;
-      --muted:        #64748B;
-      --border:       rgba(255,255,255,0.08);
-      --radius:       14px;
-      --radius-sm:    10px;
+      --bg:        #070D19;
+      --surface:   #0C1829;
+      --surface-2: #111F34;
+      --navy:      #0F2340;
+      --teal:      #39FF14;
+      --teal-dark: #2EE010;
+      --white:     #FFFFFF;
+      --text:      #F1F5F9;
+      --muted:     #64748B;
+      --border:    rgba(255,255,255,0.08);
+      --radius:    14px;
+      --radius-sm: 10px;
     }
 
     html { scroll-behavior: smooth; }
@@ -41,19 +38,24 @@
       overflow-x: hidden;
     }
 
-    /* ── Ambient glow background ── */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,184,150,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(57,255,20,0.06) 0%, transparent 65%),
         radial-gradient(ellipse 50% 60% at 90% 100%, rgba(15,35,64,0.5) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ── Header ── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
     .header {
       position: relative;
       z-index: 10;
@@ -62,24 +64,14 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border);
-      background: rgba(7,13,25,0.85);
+      background: rgba(7,13,25,0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
-    .logo {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--white);
-      letter-spacing: -0.02em;
-    }
+    .logo { font-size: 15px; font-weight: 800; color: var(--white); letter-spacing: -0.02em; }
     .logo span { color: var(--teal); }
-    .header-sub {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 500;
-    }
+    .header-sub { font-size: 12px; color: var(--muted); font-weight: 500; }
 
-    /* ── Progress bar ── */
     .progress-bar-wrap {
       position: relative;
       z-index: 10;
@@ -89,56 +81,28 @@
       display: none;
     }
     .progress-bar-wrap.visible { display: block; }
-    .progress-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .progress-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .progress-pct {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--teal);
-    }
-    .progress-track {
-      background: rgba(255,255,255,0.06);
-      border-radius: 99px;
-      height: 3px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      background: linear-gradient(90deg, var(--teal), #00D4AA);
-      height: 100%;
-      border-radius: 99px;
+    .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .progress-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .progress-pct   { font-size: 12px; font-weight: 800; color: var(--teal); }
+    .progress-track { background: rgba(255,255,255,0.06); border-radius: 99px; height: 3px; overflow: hidden; }
+    .progress-fill  {
+      background: var(--teal);
+      height: 100%; border-radius: 99px;
       transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
       width: 0%;
-      box-shadow: 0 0 10px rgba(0,184,150,0.55);
+      box-shadow: 0 0 10px rgba(57,255,20,0.55);
     }
 
-    /* ── Layout ── */
     .main-wrap {
-      flex: 1;
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      flex: 1; position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
       padding: 48px 16px 72px;
     }
     .card { width: 100%; max-width: 640px; }
 
-    /* ── Screen visibility ── */
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -152,548 +116,231 @@
       to   { opacity: 0; transform: translateX(-56px); }
     }
     @keyframes optionPop {
-      0%   { box-shadow: 0 0 0 0 rgba(0,184,150,0.45); }
-      60%  { box-shadow: 0 0 0 10px rgba(0,184,150,0); }
-      100% { box-shadow: 0 0 0 0 rgba(0,184,150,0); }
+      0%   { box-shadow: 0 0 0 0 rgba(57,255,20,0.45); }
+      60%  { box-shadow: 0 0 0 10px rgba(57,255,20,0); }
+      100% { box-shadow: 0 0 0 0 rgba(57,255,20,0); }
     }
     @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.92); }
+      from { opacity: 0; transform: scale(0.88); }
       to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes scorePulse {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(1.12); filter: brightness(1.5) drop-shadow(0 0 28px rgba(57,255,20,0.7)); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+    @keyframes ringGlow {
+      0%   { filter: drop-shadow(0 0 6px currentColor); }
+      50%  { filter: drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor); }
+      100% { filter: drop-shadow(0 0 8px currentColor); }
     }
 
     .anim-fadeup  { animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) both; }
-    .anim-scalein { animation: scaleIn 0.6s cubic-bezier(0.34,1.4,0.64,1) both; }
-
+    .anim-scalein { animation: scaleIn 0.7s cubic-bezier(0.34,1.4,0.64,1) both; }
     .q-content.slide-in  { animation: slideInRight 0.32s cubic-bezier(0.4,0,0.2,1) both; }
-    .q-content.slide-out { animation: slideOutLeft 0.22s cubic-bezier(0.4,0,0.2,1) both; }
+    .q-content.slide-out { animation: slideOutLeft  0.22s cubic-bezier(0.4,0,0.2,1) both; }
+    .score-num.count-complete    { animation: scorePulse 0.7s cubic-bezier(0.34,1.3,0.64,1) both; }
+    .score-ring-fill.ring-complete { animation: ringGlow 1.4s ease-in-out 1.4s both; }
 
-    /* ── Welcome ── */
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--teal);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      margin-bottom: 22px;
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 800; color: var(--teal);
+      text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 22px;
     }
     .eyebrow::before {
-      content: '';
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--teal);
-      border-radius: 2px;
-      flex-shrink: 0;
+      content: ''; display: block; width: 22px; height: 2px;
+      background: var(--teal); border-radius: 2px; flex-shrink: 0;
     }
 
     .welcome-title {
-      font-size: clamp(34px, 6vw, 54px);
-      font-weight: 900;
-      color: var(--white);
-      line-height: 1.06;
-      letter-spacing: -0.04em;
-      margin-bottom: 18px;
+      font-size: clamp(34px, 6vw, 54px); font-weight: 900; color: var(--white);
+      line-height: 1.06; letter-spacing: -0.04em; margin-bottom: 18px;
     }
-    .welcome-title em {
-      font-style: normal;
-      color: var(--teal);
-    }
+    .welcome-title em { font-style: normal; color: var(--teal); }
 
     .welcome-sub {
-      font-size: 17px;
-      color: var(--muted);
-      line-height: 1.65;
-      margin-bottom: 44px;
-      max-width: 460px;
+      font-size: 17px; color: var(--muted); line-height: 1.65;
+      margin-bottom: 44px; max-width: 460px;
     }
 
-    /* ── Industry cards ── */
     .industry-section-label {
-      font-size: 11px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.3);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 14px;
-      display: block;
+      font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.3);
+      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px; display: block;
     }
     #industry-select { display: none; }
 
-    .industry-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+    .industry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
 
     .industry-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 20px 10px 16px;
-      cursor: pointer;
-      text-align: center;
-      transition: border-color 0.18s, transform 0.18s cubic-bezier(0.4,0,0.2,1),
-                  background 0.18s, box-shadow 0.18s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      font-family: inherit;
-      position: relative;
-      overflow: hidden;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 20px 10px 16px;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.18s, transform 0.18s cubic-bezier(0.4,0,0.2,1), background 0.18s, box-shadow 0.18s;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      font-family: inherit; position: relative; overflow: hidden;
     }
     .industry-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 9px;
-      background: radial-gradient(circle at 50% 0%, rgba(0,184,150,0.12), transparent 70%);
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
+      content: ''; position: absolute; inset: 0; border-radius: 9px;
+      background: radial-gradient(circle at 50% 0%, rgba(57,255,20,0.10), transparent 70%);
+      opacity: 0; transition: opacity 0.2s; pointer-events: none;
     }
-    .industry-card:hover {
-      border-color: rgba(0,184,150,0.45);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 28px rgba(0,184,150,0.1);
-    }
+    .industry-card:hover { border-color: rgba(57,255,20,0.45); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(57,255,20,0.08); }
     .industry-card:hover::after { opacity: 1; }
     .industry-card:active { transform: translateY(0) scale(0.97); }
-
     .industry-card.selected {
-      border-color: var(--teal);
-      background: rgba(0,184,150,0.07);
-      box-shadow: 0 0 0 3px rgba(0,184,150,0.14), 0 8px 24px rgba(0,184,150,0.1);
+      border-color: var(--teal); background: rgba(57,255,20,0.06);
+      box-shadow: 0 0 0 3px rgba(57,255,20,0.12), 0 8px 24px rgba(57,255,20,0.08);
     }
     .industry-card.selected::after { opacity: 1; }
-
-    .industry-icon { font-size: 26px; line-height: 1; }
-    .industry-name {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.5);
-      line-height: 1.3;
-      transition: color 0.18s;
+    .industry-card.selected::before {
+      content: '✓'; position: absolute; top: 6px; right: 8px;
+      font-size: 10px; font-weight: 800; color: var(--teal); line-height: 1;
     }
+    .industry-icon { font-size: 26px; line-height: 1; }
+    .industry-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); line-height: 1.3; transition: color 0.18s; }
     .industry-card:hover .industry-name,
     .industry-card.selected .industry-name { color: var(--white); }
-
-    /* checkmark on selected */
-    .industry-card.selected::before {
-      content: '✓';
-      position: absolute;
-      top: 6px; right: 8px;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--teal);
-      line-height: 1;
-    }
-
-    .industry-err {
-      font-size: 13px;
-      color: #F87171;
-      margin-bottom: 14px;
-      display: none;
-    }
+    .industry-err { font-size: 13px; color: #F87171; margin-bottom: 14px; display: none; }
     .industry-err.visible { display: block; }
 
-    /* ── Buttons ── */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 17px 32px;
-      border-radius: var(--radius-sm);
-      font-size: 16px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-      text-decoration: none;
-      width: 100%;
-      letter-spacing: -0.01em;
-      position: relative;
-      overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 17px 32px; border-radius: var(--radius-sm); font-size: 16px;
+      font-weight: 700; font-family: inherit; cursor: pointer; border: none;
+      transition: all 0.2s cubic-bezier(0.4,0,0.2,1); text-decoration: none;
+      width: 100%; letter-spacing: -0.01em; position: relative; overflow: hidden;
     }
-    .btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0);
-      transition: background 0.12s;
-    }
+    .btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0); transition: background 0.12s; }
     .btn:active::after { background: rgba(255,255,255,0.08); }
 
     .btn-teal {
-      background: linear-gradient(135deg, var(--teal) 0%, #00D4AA 100%);
-      color: #07111F;
-      box-shadow: 0 4px 20px rgba(0,184,150,0.28);
+      background: var(--teal); color: #07111F;
+      box-shadow: 0 4px 20px rgba(57,255,20,0.32);
     }
-    .btn-teal:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,184,150,0.42);
-    }
+    .btn-teal:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(57,255,20,0.50); background: var(--teal-dark); }
     .btn-teal:active { transform: translateY(0); }
 
     .btn-navy {
-      background: var(--surface-2);
-      color: var(--white);
+      background: var(--surface-2); color: var(--white);
       border: 1.5px solid rgba(255,255,255,0.1);
     }
-    .btn-navy:hover {
-      background: var(--navy);
-      border-color: rgba(255,255,255,0.18);
-      transform: translateY(-2px);
-    }
+    .btn-navy:hover { background: var(--navy); border-color: rgba(255,255,255,0.18); transform: translateY(-2px); }
 
-    /* ── Question screen ── */
-    .q-shell {
-      position: relative;
-      overflow: hidden;
-      min-height: 340px;
-    }
+    .q-shell { position: relative; overflow: hidden; min-height: 340px; }
     .q-content { will-change: transform, opacity; }
 
     .q-category {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--teal);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 11px; font-weight: 800; color: var(--teal);
+      text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
     }
     .q-category::before {
-      content: '';
-      display: block;
-      width: 18px;
-      height: 2px;
-      background: var(--teal);
-      border-radius: 2px;
-      flex-shrink: 0;
+      content: ''; display: block; width: 18px; height: 2px;
+      background: var(--teal); border-radius: 2px; flex-shrink: 0;
     }
-
     .q-text {
-      font-size: clamp(22px, 4vw, 30px);
-      font-weight: 800;
-      color: var(--white);
-      line-height: 1.28;
-      letter-spacing: -0.03em;
-      margin-bottom: 32px;
+      font-size: clamp(22px, 4vw, 30px); font-weight: 800; color: var(--white);
+      line-height: 1.28; letter-spacing: -0.03em; margin-bottom: 32px;
     }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    .options { display: flex; flex-direction: column; gap: 10px; }
     .option {
-      padding: 18px 20px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 15px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.65);
-      cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
-      background: var(--surface);
-      text-align: left;
-      font-family: inherit;
-      line-height: 1.5;
-      position: relative;
-      overflow: hidden;
+      padding: 18px 20px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.65);
+      cursor: pointer; transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+      background: var(--surface); text-align: left; font-family: inherit;
+      line-height: 1.5; position: relative; overflow: hidden;
     }
     .option::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--teal);
-      transform: scaleY(0);
-      transform-origin: center;
-      transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
-      border-radius: 0 2px 2px 0;
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--teal); transform: scaleY(0); transform-origin: center;
+      transition: transform 0.2s cubic-bezier(0.4,0,0.2,1); border-radius: 0 2px 2px 0;
     }
-    .option:hover:not(:disabled) {
-      border-color: rgba(0,184,150,0.45);
-      background: rgba(0,184,150,0.06);
-      color: var(--white);
-      transform: translateX(5px);
-    }
+    .option:hover:not(:disabled) { border-color: rgba(57,255,20,0.45); background: rgba(57,255,20,0.05); color: var(--white); transform: translateX(5px); }
     .option:hover:not(:disabled)::before { transform: scaleY(1); }
     .option:active:not(:disabled) { transform: translateX(3px) scale(0.99); }
-
-    .option.selected {
-      border-color: var(--teal);
-      background: rgba(0,184,150,0.1);
-      color: var(--white);
-      font-weight: 600;
-      animation: optionPop 0.5s ease-out;
-    }
+    .option.selected { border-color: var(--teal); background: rgba(57,255,20,0.08); color: var(--white); font-weight: 600; animation: optionPop 0.5s ease-out; }
     .option.selected::before { transform: scaleY(1); }
     .option:disabled { cursor: default; }
 
-    /* ── Contact screen ── */
-    .contact-title {
-      font-size: clamp(26px, 4.5vw, 40px);
-      font-weight: 900;
-      color: var(--white);
-      letter-spacing: -0.035em;
-      margin-bottom: 10px;
-      line-height: 1.12;
-    }
-    .contact-sub {
-      font-size: 16px;
-      color: var(--muted);
-      line-height: 1.65;
-      margin-bottom: 32px;
-    }
-
-    .form-group { margin-bottom: 16px; }
-    .field-label {
-      display: block;
-      font-size: 11px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.4);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
-    }
-    .form-input {
-      width: 100%;
-      padding: 16px 18px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 16px;
-      font-family: inherit;
-      color: var(--white);
-      background: var(--surface);
-      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-    }
+    .contact-title { font-size: clamp(26px, 4.5vw, 40px); font-weight: 900; color: var(--white); letter-spacing: -0.035em; margin-bottom: 10px; line-height: 1.12; }
+    .contact-sub   { font-size: 16px; color: var(--muted); line-height: 1.65; margin-bottom: 32px; }
+    .form-group    { margin-bottom: 16px; }
+    .field-label   { display: block; font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .form-input    { width: 100%; padding: 16px 18px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-family: inherit; color: var(--white); background: var(--surface); transition: border-color 0.18s, background 0.18s, box-shadow 0.18s; }
     .form-input::placeholder { color: rgba(255,255,255,0.18); }
-    .form-input:focus {
-      outline: none;
-      border-color: var(--teal);
-      background: rgba(0,184,150,0.04);
-      box-shadow: 0 0 0 3px rgba(0,184,150,0.12);
-    }
-
-    .err {
-      font-size: 13px;
-      color: #F87171;
-      margin-bottom: 12px;
-      display: none;
-    }
+    .form-input:focus { outline: none; border-color: var(--teal); background: rgba(57,255,20,0.03); box-shadow: 0 0 0 3px rgba(57,255,20,0.10); }
+    .err { font-size: 13px; color: #F87171; margin-bottom: 12px; display: none; }
     .err.visible { display: block; }
+    .privacy-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    .privacy-note {
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+    .results-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; transition: background 1s ease; }
+    .results-bg.tier-0 { background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(239,68,68,0.13) 0%, transparent 65%); }
+    .results-bg.tier-1 { background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(249,115,22,0.13) 0%, transparent 65%); }
+    .results-bg.tier-2 { background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(34,197,94,0.14) 0%, transparent 65%); }
+    .results-bg.tier-3 { background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(57,255,20,0.12) 0%, transparent 65%); }
 
-    /* ── Results ── */
-    .results-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      transition: background 1s ease;
-    }
-    .results-bg.tier-0 {
-      background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(239,68,68,0.13) 0%, transparent 65%);
-    }
-    .results-bg.tier-1 {
-      background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(249,115,22,0.13) 0%, transparent 65%);
-    }
-    .results-bg.tier-2 {
-      background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(34,197,94,0.14) 0%, transparent 65%);
-    }
-    .results-bg.tier-3 {
-      background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(0,184,150,0.16) 0%, transparent 65%);
-    }
+    .results-wrap { text-align: center; animation: fadeUp 0.6s cubic-bezier(0.4,0,0.2,1) both; }
 
-    .results-wrap {
-      text-align: center;
-      animation: fadeUp 0.6s cubic-bezier(0.4,0,0.2,1) both;
-    }
-
-    /* Circular progress ring */
-    .score-ring-wrap {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      margin: 0 auto 24px;
-    }
-    .score-ring-svg {
-      width: 200px;
-      height: 200px;
-      transform: rotate(-90deg);
-    }
-    .score-ring-track {
-      fill: none;
-      stroke: rgba(255,255,255,0.05);
-      stroke-width: 7;
-    }
-    .score-ring-fill {
-      fill: none;
-      stroke-width: 7;
-      stroke-linecap: round;
-      /* r=80, circumference = 2π×80 = 502.65 */
-      stroke-dasharray: 502.65;
-      stroke-dashoffset: 502.65;
-      transition: stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1),
-                  stroke 0.2s ease;
+    .score-ring-wrap  { position: relative; width: 220px; height: 220px; margin: 0 auto 28px; }
+    .score-ring-svg   { width: 220px; height: 220px; transform: rotate(-90deg); }
+    .score-ring-track { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 7; }
+    .score-ring-fill  {
+      fill: none; stroke-width: 7; stroke-linecap: round;
+      stroke-dasharray: 552.92;
+      stroke-dashoffset: 552.92;
+      transition: stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1), stroke 0.2s ease;
       filter: drop-shadow(0 0 6px currentColor);
     }
-    .score-ring-center {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .score-num {
-      font-size: 68px;
-      font-weight: 900;
-      color: var(--white);
-      line-height: 1;
-      letter-spacing: -0.06em;
-      font-variant-numeric: tabular-nums;
-    }
-    .score-denom {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-top: 5px;
-      letter-spacing: 0.04em;
-    }
+    .score-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .score-num   { font-size: 80px; font-weight: 900; color: var(--white); line-height: 1; letter-spacing: -0.06em; font-variant-numeric: tabular-nums; }
+    .score-denom { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 5px; letter-spacing: 0.04em; }
 
-    .tier-badge {
-      display: inline-block;
-      padding: 7px 20px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 22px;
-    }
+    .tier-badge   { display: inline-block; padding: 7px 20px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 22px; }
     .tier-badge-0 { background: rgba(239,68,68,0.12);  color: #F87171; border: 1px solid rgba(239,68,68,0.28); }
     .tier-badge-1 { background: rgba(249,115,22,0.12); color: #FB923C; border: 1px solid rgba(249,115,22,0.28); }
     .tier-badge-2 { background: rgba(34,197,94,0.12);  color: #4ADE80; border: 1px solid rgba(34,197,94,0.28); }
-    .tier-badge-3 { background: rgba(0,184,150,0.12);  color: var(--teal); border: 1px solid rgba(0,184,150,0.28); }
+    .tier-badge-3 { background: rgba(57,255,20,0.10);  color: var(--teal); border: 1px solid rgba(57,255,20,0.28); }
 
-    .result-headline {
-      font-size: clamp(22px, 4vw, 32px);
-      font-weight: 900;
-      color: var(--white);
-      letter-spacing: -0.035em;
-      margin-bottom: 14px;
-      line-height: 1.18;
-    }
-    .result-message {
-      font-size: 16px;
-      color: var(--muted);
-      line-height: 1.72;
-      margin-bottom: 32px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+    .result-headline { font-size: clamp(22px, 4vw, 32px); font-weight: 900; color: var(--white); letter-spacing: -0.035em; margin-bottom: 14px; line-height: 1.18; }
+    .result-message  { font-size: 16px; color: var(--muted); line-height: 1.72; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
 
-    /* Headwaters callout */
     .hw-callout {
-      background: linear-gradient(135deg, rgba(12,24,41,0.95), rgba(0,184,150,0.06));
-      border: 1px solid rgba(0,184,150,0.22);
-      border-radius: var(--radius);
-      padding: 28px;
-      margin-bottom: 20px;
-      text-align: left;
-      display: none;
-      backdrop-filter: blur(8px);
+      background: linear-gradient(135deg, rgba(12,24,41,0.96), rgba(57,255,20,0.04));
+      border: 1px solid rgba(57,255,20,0.20);
+      border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
+      text-align: left; backdrop-filter: blur(8px);
     }
-    .hw-callout.visible { display: block; }
-    .hw-eyebrow {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--teal);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 8px;
-    }
-    .hw-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--white);
-      margin-bottom: 10px;
-      line-height: 1.3;
-      letter-spacing: -0.02em;
-    }
-    .hw-text {
-      font-size: 14px;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.68;
-      margin-bottom: 20px;
-    }
+    .hw-eyebrow { font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+    .hw-title   { font-size: 18px; font-weight: 800; color: var(--white); margin-bottom: 10px; line-height: 1.3; letter-spacing: -0.02em; }
+    .hw-text    { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.68; margin-bottom: 20px; }
+    .hw-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .btn-hw {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 12px 22px;
-      background: var(--teal);
-      color: #07111F;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: inherit;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: all 0.18s;
-      box-shadow: 0 4px 16px rgba(0,184,150,0.28);
+      display: inline-flex; align-items: center; gap: 6px; padding: 12px 22px;
+      background: var(--teal); color: #07111F; border-radius: 9px;
+      font-size: 14px; font-weight: 700; font-family: inherit; text-decoration: none;
+      border: none; cursor: pointer; transition: all 0.18s;
+      box-shadow: 0 4px 16px rgba(57,255,20,0.28);
     }
-    .btn-hw:hover {
-      background: #00D4AA;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,184,150,0.4);
-    }
+    .btn-hw:hover { background: var(--teal-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(57,255,20,0.44); }
+    .btn-hw-buy { background: transparent; color: var(--teal); border: 1.5px solid rgba(57,255,20,0.4); box-shadow: none; }
+    .btn-hw-buy:hover { background: rgba(57,255,20,0.08); border-color: var(--teal); box-shadow: 0 4px 16px rgba(57,255,20,0.18); }
+
+    .case-studies { margin-bottom: 24px; text-align: left; }
+    .case-studies-label { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; text-align: center; }
+    .case-study { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px; margin-bottom: 10px; }
+    .cs-biz     { font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .cs-stat    { font-size: 20px; font-weight: 900; color: var(--white); letter-spacing: -0.03em; margin-bottom: 6px; }
+    .cs-detail  { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.62; }
+
+    .social-proof { font-size: 13px; color: rgba(255,255,255,0.36); text-align: center; margin-bottom: 14px; font-style: italic; line-height: 1.5; }
 
     #result-cta { margin-top: 0; }
     #result-cta .btn { font-size: 16px; }
 
-    /* ── Footer ── */
-    footer {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      padding: 22px 16px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.2);
-      border-top: 1px solid var(--border);
-    }
-    footer a {
-      color: rgba(255,255,255,0.25);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
+    footer { position: relative; z-index: 10; text-align: center; padding: 22px 16px; font-size: 12px; color: rgba(255,255,255,0.2); border-top: 1px solid var(--border); }
+    footer a { color: rgba(255,255,255,0.25); text-decoration: none; transition: color 0.15s; }
     footer a:hover { color: var(--teal); }
 
-    /* ── Mobile ── */
     @media (max-width: 600px) {
       .header { padding: 16px 20px; }
       .main-wrap { padding: 32px 16px 56px; }
@@ -701,46 +348,39 @@
       .industry-card { padding: 16px 8px 12px; border-radius: 8px; }
       .industry-icon { font-size: 22px; }
       .industry-name { font-size: 10px; }
-      .score-ring-wrap { width: 172px; height: 172px; }
-      .score-ring-svg  { width: 172px; height: 172px; }
-      .score-num { font-size: 54px; }
+      .score-ring-wrap { width: 188px; height: 188px; }
+      .score-ring-svg  { width: 188px; height: 188px; }
+      .score-num { font-size: 64px; }
     }
     @media (max-width: 360px) {
       .industry-grid { grid-template-columns: repeat(2, 1fr); }
     }
-
-    /* ── Reduced motion ── */
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      #starfield { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- Tier-colored ambient background, shown on results -->
+<canvas id="starfield"></canvas>
 <div class="results-bg" id="results-bg"></div>
 
-<!-- ── Header ── -->
 <header class="header">
-  <div class="logo">AI Readiness <span>Score</span></div>
-  <div class="header-sub">by New England Growth Studio</div>
+  <div class="logo">New England <span>Growth Studio</span></div>
+  <div class="header-sub">Growth Intelligence for New England Business</div>
 </header>
 
-<!-- ── Progress bar ── -->
 <div class="progress-bar-wrap" id="progressWrap">
   <div class="progress-meta">
     <span class="progress-label" id="progressLabel">Question 1 of 10</span>
-    <span class="progress-pct" id="progressPct">10%</span>
+    <span class="progress-pct"   id="progressPct">10%</span>
   </div>
   <div class="progress-track">
     <div class="progress-fill" id="progressFill"></div>
   </div>
 </div>
 
-<!-- ── Main ── -->
 <div class="main-wrap">
   <div class="card">
 
@@ -750,51 +390,19 @@
         <div class="eyebrow">Free Assessment</div>
         <h1 class="welcome-title">Find out if your business<br>is <em>ready for AI.</em></h1>
         <p class="welcome-sub">10 questions. 3 minutes. A clear, honest score — and a specific next step you can take today.</p>
-
         <span class="industry-section-label">What industry are you in?</span>
-
-        <!-- Hidden select — keeps original startQuiz() logic intact -->
         <select id="industry-select" aria-hidden="true" tabindex="-1"></select>
-
         <div class="industry-grid" id="industry-grid">
-          <button class="industry-card" data-value="tourism" type="button">
-            <span class="industry-icon">🏔️</span>
-            <span class="industry-name">Tourism &amp; Hospitality</span>
-          </button>
-          <button class="industry-card" data-value="home-services" type="button">
-            <span class="industry-icon">🏠</span>
-            <span class="industry-name">Home Services</span>
-          </button>
-          <button class="industry-card" data-value="food-beverage" type="button">
-            <span class="industry-icon">🍽️</span>
-            <span class="industry-name">Food &amp; Beverage</span>
-          </button>
-          <button class="industry-card" data-value="retail" type="button">
-            <span class="industry-icon">🛍️</span>
-            <span class="industry-name">Retail</span>
-          </button>
-          <button class="industry-card" data-value="health-wellness" type="button">
-            <span class="industry-icon">💪</span>
-            <span class="industry-name">Health &amp; Wellness</span>
-          </button>
-          <button class="industry-card" data-value="professional-services" type="button">
-            <span class="industry-icon">💼</span>
-            <span class="industry-name">Professional Services</span>
-          </button>
-          <button class="industry-card" data-value="construction" type="button">
-            <span class="industry-icon">🔧</span>
-            <span class="industry-name">Construction &amp; Trades</span>
-          </button>
-          <button class="industry-card" data-value="real-estate" type="button">
-            <span class="industry-icon">🏗️</span>
-            <span class="industry-name">Real Estate</span>
-          </button>
-          <button class="industry-card" data-value="other" type="button">
-            <span class="industry-icon">⚡</span>
-            <span class="industry-name">Other</span>
-          </button>
+          <button class="industry-card" data-value="tourism" type="button"><span class="industry-icon">🏔️</span><span class="industry-name">Tourism &amp; Hospitality</span></button>
+          <button class="industry-card" data-value="home-services" type="button"><span class="industry-icon">🏠</span><span class="industry-name">Home Services</span></button>
+          <button class="industry-card" data-value="food-beverage" type="button"><span class="industry-icon">🍽️</span><span class="industry-name">Food &amp; Beverage</span></button>
+          <button class="industry-card" data-value="retail" type="button"><span class="industry-icon">🛍️</span><span class="industry-name">Retail</span></button>
+          <button class="industry-card" data-value="health-wellness" type="button"><span class="industry-icon">💪</span><span class="industry-name">Health &amp; Wellness</span></button>
+          <button class="industry-card" data-value="professional-services" type="button"><span class="industry-icon">💼</span><span class="industry-name">Professional Services</span></button>
+          <button class="industry-card" data-value="construction" type="button"><span class="industry-icon">🔧</span><span class="industry-name">Construction &amp; Trades</span></button>
+          <button class="industry-card" data-value="real-estate" type="button"><span class="industry-icon">🏗️</span><span class="industry-name">Real Estate</span></button>
+          <button class="industry-card" data-value="other" type="button"><span class="industry-icon">⚡</span><span class="industry-name">Other</span></button>
         </div>
-
         <div class="industry-err" id="industry-err">Please select your industry to continue.</div>
         <button class="btn btn-teal" onclick="startQuiz()" style="margin-top:14px;">Get My Score →</button>
       </div>
@@ -838,11 +446,10 @@
     <div id="screen-results" class="screen">
       <div class="results-wrap">
 
-        <!-- Circular progress ring -->
         <div class="score-ring-wrap anim-scalein">
-          <svg class="score-ring-svg" viewBox="0 0 200 200" aria-hidden="true">
-            <circle class="score-ring-track" cx="100" cy="100" r="80"/>
-            <circle class="score-ring-fill" id="score-ring-fill" cx="100" cy="100" r="80"/>
+          <svg class="score-ring-svg" viewBox="0 0 220 220" aria-hidden="true">
+            <circle class="score-ring-track" cx="110" cy="110" r="88"/>
+            <circle class="score-ring-fill" id="score-ring-fill" cx="110" cy="110" r="88"/>
           </svg>
           <div class="score-ring-center">
             <div class="score-num" id="score-num">0</div>
@@ -850,36 +457,127 @@
           </div>
         </div>
 
-        <div class="tier-badge" id="tier-badge"></div>
-        <h2 class="result-headline"  id="result-headline"></h2>
-        <p  class="result-message"   id="result-message"></p>
+        <div class="tier-badge"     id="tier-badge"></div>
+        <h2 class="result-headline" id="result-headline"></h2>
+        <p  class="result-message"  id="result-message"></p>
 
-        <!-- Headwaters callout — tourism industry, score > 25 -->
+        <!-- Headwaters callout — shown to every user -->
         <div class="hw-callout" id="hw-callout">
-          <div class="hw-eyebrow">Built for your industry</div>
-          <div class="hw-title">We built something specifically for you.</div>
-          <p class="hw-text">Headwaters is a proprietary marketing mix modeling tool that shows tourism and hospitality businesses in the Lakes Region exactly which channels are driving their bookings — so you stop guessing and put your budget where it actually works.</p>
-          <a href="https://getheadwaters.app" target="_blank" class="btn-hw">Get Access to Headwaters →</a>
+          <div class="hw-eyebrow">Built for New England Business</div>
+          <div class="hw-title">Stop guessing which marketing is working.</div>
+          <p class="hw-text">Headwaters is a proprietary marketing mix modeling tool built for New England businesses. It shows you exactly which channels are driving your bookings and revenue — so you put your budget where it actually works and cut what isn't.</p>
+          <div class="hw-actions">
+            <a href="https://getheadwaters.app" target="_blank" class="btn-hw">Get Access to Headwaters →</a>
+            <a href="https://getheadwaters.app" target="_blank" class="btn-hw btn-hw-buy" id="hw-buy-btn" style="display:none;">Buy Headwaters Now →</a>
+          </div>
         </div>
 
+        <!-- Case studies -->
+        <div class="case-studies">
+          <div class="case-studies-label">What businesses like yours found out</div>
+          <div class="case-study">
+            <div class="cs-biz">Lost Creek Outfitters · Moultonborough, NH</div>
+            <div class="cs-stat">$1,400/month freed up. Same revenue.</div>
+            <div class="cs-detail">Running Google Ads for two seasons with no way to measure results. Headwaters showed direct and organic driving 71% of bookings — paid search just 12%. They cut the ads. Revenue held. The budget didn't.</div>
+          </div>
+          <div class="case-study">
+            <div class="cs-biz">Lakeview Lodge · Laconia, NH</div>
+            <div class="cs-stat">Booking revenue up 23%. Same total spend.</div>
+            <div class="cs-detail">Spending $3,200/month across Google, Yelp, and Facebook with no idea what was working. Headwaters showed Yelp driving zero bookings. Google driving 68%. They cut Yelp, doubled Google. Next season: up 23%.</div>
+          </div>
+        </div>
+
+        <p class="social-proof" id="social-proof-text"></p>
         <div id="result-cta"></div>
       </div>
     </div>
 
-  </div><!-- /.card -->
-</div><!-- /.main-wrap -->
+  </div>
+</div>
 
 <footer>
   <a href="https://newenglandgrowthstudio.com">New England Growth Studio</a>
-  &nbsp;·&nbsp; Lakes Region, New Hampshire
+  &nbsp;·&nbsp; New England
 </footer>
 
 <script>
-  // ── Config ─────────────────────────────────────────────────────────────────
   const CALENDLY_URL = 'https://calendly.com/matthewalighieri';
 
-  // ── Industry card wiring ───────────────────────────────────────────────────
-  // Cards write to the hidden <select> so the original startQuiz() reads .value unchanged
+  // ── Starfield ──────────────────────────────────────────────────────────────
+  (function () {
+    const canvas = document.getElementById('starfield');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const stars = Array.from({ length: 150 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.1 + 0.2,
+      speed: Math.random() * 0.12 + 0.04,
+      opacity: Math.random() * 0.65 + 0.2,
+      twinkle: Math.random() * Math.PI * 2,
+      twinkleSpeed: Math.random() * 0.018 + 0.004
+    }));
+
+    const meteors = [];
+
+    function spawnMeteor() {
+      meteors.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.45,
+        length: Math.random() * 130 + 70,
+        speed: Math.random() * 9 + 7,
+        opacity: 0.9,
+        angle: Math.PI / 5.5
+      });
+    }
+
+    setTimeout(spawnMeteor, 900);
+    setInterval(() => { if (meteors.filter(m => m.opacity > 0).length < 2) spawnMeteor(); }, 2800);
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach(s => {
+        s.twinkle += s.twinkleSpeed;
+        const op = s.opacity * (0.55 + 0.45 * Math.sin(s.twinkle));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${op.toFixed(3)})`;
+        ctx.fill();
+        s.y -= s.speed;
+        if (s.y < -2) { s.y = canvas.height + 2; s.x = Math.random() * canvas.width; }
+      });
+
+      for (let i = meteors.length - 1; i >= 0; i--) {
+        const m = meteors[i];
+        if (m.opacity <= 0) { meteors.splice(i, 1); continue; }
+        const dx = Math.cos(m.angle) * m.length;
+        const dy = Math.sin(m.angle) * m.length;
+        const g  = ctx.createLinearGradient(m.x, m.y, m.x - dx, m.y - dy);
+        g.addColorStop(0,    `rgba(255,255,255,${m.opacity.toFixed(3)})`);
+        g.addColorStop(0.35, `rgba(180,255,160,${(m.opacity * 0.5).toFixed(3)})`);
+        g.addColorStop(1,    'rgba(57,255,20,0)');
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        ctx.lineTo(m.x - dx, m.y - dy);
+        ctx.strokeStyle = g;
+        ctx.lineWidth   = 1.5;
+        ctx.stroke();
+        m.x      += Math.cos(m.angle) * m.speed;
+        m.y      += Math.sin(m.angle) * m.speed;
+        m.opacity -= 0.011;
+      }
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ── Industry cards ─────────────────────────────────────────────────────────
   document.querySelectorAll('.industry-card').forEach(card => {
     card.addEventListener('click', () => {
       document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('selected'));
@@ -926,20 +624,20 @@
       category: 'Data',
       text: 'Do you know where your customers are coming from?',
       options: [
-        { text: 'Yes — we track lead sources and review them regularly',                   points: 10 },
-        { text: "Somewhat — we have tracking set up but don't check it consistently",      points: 8  },
-        { text: "We have a general sense, but nothing formal",                             points: 5  },
-        { text: "No — we don't track this",                                                points: 0  }
+        { text: 'Yes — we track lead sources and review them regularly',              points: 10 },
+        { text: "Somewhat — we have tracking set up but don't check it consistently", points: 8  },
+        { text: "We have a general sense, but nothing formal",                        points: 5  },
+        { text: "No — we don't track this",                                           points: 0  }
       ]
     },
     {
       category: 'Data',
       text: 'Do you have an email list of your customers and leads?',
       options: [
-        { text: 'Yes — an organized list we email regularly',           points: 10 },
-        { text: 'We have a list but rarely send to it',                 points: 8  },
-        { text: 'We have scattered contacts but no organized list',     points: 5  },
-        { text: 'No email list',                                        points: 0  }
+        { text: 'Yes — an organized list we email regularly',        points: 10 },
+        { text: 'We have a list but rarely send to it',              points: 8  },
+        { text: 'We have scattered contacts but no organized list',  points: 5  },
+        { text: 'No email list',                                     points: 0  }
       ]
     },
     {
@@ -966,71 +664,59 @@
       category: 'Team',
       text: 'How does your team respond to new tools or processes?',
       options: [
-        { text: 'We actively seek out and test new tools — always looking to improve',  points: 10 },
-        { text: "We're open to it if someone shows us how and makes the case",          points: 8  },
-        { text: "We'll adopt something new if we have to, but it's a slow process",    points: 5  },
-        { text: 'We prefer to keep things the way they are',                            points: 0  }
+        { text: 'We actively seek out and test new tools — always looking to improve', points: 10 },
+        { text: "We're open to it if someone shows us how and makes the case",         points: 8  },
+        { text: "We'll adopt something new if we have to, but it's a slow process",   points: 5  },
+        { text: 'We prefer to keep things the way they are',                           points: 0  }
       ]
     },
     {
       category: 'Marketing',
       text: 'How many active marketing channels are you running right now?',
       options: [
-        { text: 'Three or more — and we track performance on each one',            points: 10 },
-        { text: "Two or three — but we're not measuring what's actually working",  points: 8  },
-        { text: 'Mainly word of mouth and one other channel',                      points: 5  },
-        { text: "We don't have an active marketing strategy right now",            points: 0  }
+        { text: 'Three or more — and we track performance on each one',           points: 10 },
+        { text: "Two or three — but we're not measuring what's actually working", points: 8  },
+        { text: 'Mainly word of mouth and one other channel',                     points: 5  },
+        { text: "We don't have an active marketing strategy right now",           points: 0  }
       ]
     },
     {
       category: 'Marketing',
       text: 'What happens when a new lead comes in?',
       options: [
-        { text: 'They enter an automated follow-up sequence within 24 hours',                    points: 10 },
-        { text: 'Someone follows up manually, usually within a day or two',                      points: 8  },
-        { text: "Follow-up happens but it's inconsistent — things fall through the cracks",      points: 5  },
-        { text: "We don't have a defined follow-up process",                                     points: 0  }
+        { text: 'They enter an automated follow-up sequence within 24 hours',               points: 10 },
+        { text: 'Someone follows up manually, usually within a day or two',                  points: 8  },
+        { text: "Follow-up happens but it's inconsistent — things fall through the cracks", points: 5  },
+        { text: "We don't have a defined follow-up process",                                 points: 0  }
       ]
     }
   ];
 
-  // ── Tier definitions ───────────────────────────────────────────────────────
+  // ── Tiers ──────────────────────────────────────────────────────────────────
   const tiers = [
     {
-      label:      'Not Quite Ready',
-      badgeClass: 'tier-badge-0',
-      ringColor:  '#EF4444',
-      bgClass:    'tier-0',
-      headline:   'Your foundation needs work before AI can help.',
-      message:    "The good news: the gaps are fixable. Most businesses in your position need to get basic systems and data in place first — and that's exactly where to start.",
-      cta:        `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-navy" style="display:inline-flex;">Book a Free 15-Minute Call →</a>`
+      label: 'Not Quite Ready', badgeClass: 'tier-badge-0', ringColor: '#EF4444', bgClass: 'tier-0',
+      headline: 'Your foundation needs work before AI can help.',
+      message:  "The good news: the gaps are fixable. Most businesses in your position need to get basic systems and data in place first — and that's exactly where to start.",
+      cta:      `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-navy" style="display:inline-flex;">Book a Free 15-Minute Call →</a>`
     },
     {
-      label:      'Almost There',
-      badgeClass: 'tier-badge-1',
-      ringColor:  '#F97316',
-      bgClass:    'tier-1',
-      headline:   "You're closer than you think.",
-      message:    "You've built real infrastructure. There are a few gaps holding you back, but nothing that can't be addressed quickly. A short conversation with our team is worth your time — no pitch, no commitment.",
-      cta:        `<a href="mailto:matthewalighieri@gmail.com?subject=AI%20Readiness%20Score%20%E2%80%94%20Let's%20Talk" class="btn btn-navy" style="display:inline-flex;">Talk to Our Team →</a>`
+      label: 'Almost There', badgeClass: 'tier-badge-1', ringColor: '#F97316', bgClass: 'tier-1',
+      headline: "You're closer than you think.",
+      message:  "You've built real infrastructure. There are a few gaps holding you back, but nothing that can't be addressed quickly. A short conversation with our team is worth your time — no pitch, no commitment.",
+      cta:      `<a href="mailto:matthewalighieri@gmail.com?subject=AI%20Readiness%20Score%20%E2%80%94%20Let's%20Talk" class="btn btn-navy" style="display:inline-flex;">Talk to Our Team →</a>`
     },
     {
-      label:      "You're Ready",
-      badgeClass: 'tier-badge-2',
-      ringColor:  '#22C55E',
-      bgClass:    'tier-2',
-      headline:   'You have what it takes to start.',
-      message:    "Your systems and team are in solid shape. You're leaving revenue on the table by not moving on this now. Book a free consultation — we'll map out exactly where AI creates the most leverage in your business.",
-      cta:        `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-teal" style="display:inline-flex;">Book a Free Consultation →</a>`
+      label: "You're Ready", badgeClass: 'tier-badge-2', ringColor: '#22C55E', bgClass: 'tier-2',
+      headline: 'You have what it takes to start.',
+      message:  "Your systems and team are in solid shape. You're leaving revenue on the table by not moving on this now. Book a free consultation — we'll map out exactly where AI creates the most leverage in your business.",
+      cta:      `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-teal" style="display:inline-flex;">Book a Free Consultation →</a>`
     },
     {
-      label:      "You're a Priority",
-      badgeClass: 'tier-badge-3',
-      ringColor:  '#00B896',
-      bgClass:    'tier-3',
-      headline:   "You're built for this.",
-      message:    "You have the systems, the data, and the team to move fast. Businesses like yours see the biggest returns from AI — and we want to work with you. Book your priority call now. You'll be talking to Matthew directly.",
-      cta:        `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-teal" style="display:inline-flex;">Book Your Priority Call →</a>`
+      label: "You're a Priority", badgeClass: 'tier-badge-3', ringColor: '#39FF14', bgClass: 'tier-3',
+      headline: "You're built for this.",
+      message:  "You have the systems, the data, and the team to move fast. Businesses like yours see the biggest returns from AI — and we want to work with you. Book your priority call now. You'll be talking to Matthew directly.",
+      cta:      `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-teal" style="display:inline-flex;">Book Your Priority Call →</a>`
     }
   ];
 
@@ -1039,7 +725,6 @@
   let answers  = [];
   let industry = '';
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + id).classList.add('active');
@@ -1052,68 +737,45 @@
     return 3;
   }
 
-  // ── Start ──────────────────────────────────────────────────────────────────
   function startQuiz() {
     const sel = document.getElementById('industry-select');
-    if (!sel.value) {
-      document.getElementById('industry-err').classList.add('visible');
-      return;
-    }
+    if (!sel.value) { document.getElementById('industry-err').classList.add('visible'); return; }
     industry = sel.value;
     document.getElementById('industry-err').classList.remove('visible');
     document.getElementById('progressWrap').classList.add('visible');
-    currentQ = 0;
-    answers  = [];
+    currentQ = 0; answers = [];
     renderQuestion(false);
     showScreen('question');
   }
 
-  // ── Render question ────────────────────────────────────────────────────────
   function renderQuestion(animate) {
     const q       = questions[currentQ];
     const content = document.getElementById('q-content');
-
     function paint() {
       document.getElementById('q-category').textContent = q.category;
       document.getElementById('q-text').textContent     = q.text;
-
       const optEl = document.getElementById('q-options');
       optEl.innerHTML = '';
       q.options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className   = 'option';
-        btn.textContent = opt.text;
-        btn.onclick     = () => pickAnswer(opt.points, btn);
+        btn.className = 'option'; btn.textContent = opt.text;
+        btn.onclick = () => pickAnswer(opt.points, btn);
         optEl.appendChild(btn);
       });
-
       const pct = Math.round((currentQ / questions.length) * 100);
-      document.getElementById('progressFill').style.width   = pct + '%';
-      document.getElementById('progressPct').textContent    = pct + '%';
-      document.getElementById('progressLabel').textContent  = `Question ${currentQ + 1} of ${questions.length}`;
-
-      if (animate) {
-        content.classList.remove('slide-out', 'slide-in');
-        void content.offsetWidth; // force reflow
-        content.classList.add('slide-in');
-      }
+      document.getElementById('progressFill').style.width  = pct + '%';
+      document.getElementById('progressPct').textContent   = pct + '%';
+      document.getElementById('progressLabel').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+      if (animate) { content.classList.remove('slide-out', 'slide-in'); void content.offsetWidth; content.classList.add('slide-in'); }
     }
-
-    if (animate) {
-      content.classList.remove('slide-in');
-      content.classList.add('slide-out');
-      setTimeout(paint, 200);
-    } else {
-      paint();
-    }
+    if (animate) { content.classList.remove('slide-in'); content.classList.add('slide-out'); setTimeout(paint, 200); }
+    else paint();
   }
 
-  // ── Pick answer ────────────────────────────────────────────────────────────
   function pickAnswer(points, btn) {
     document.querySelectorAll('.option').forEach(b => b.disabled = true);
     btn.classList.add('selected');
     answers.push(points);
-
     setTimeout(() => {
       currentQ++;
       if (currentQ < questions.length) {
@@ -1122,34 +784,24 @@
         document.getElementById('progressFill').style.width  = '100%';
         document.getElementById('progressPct').textContent   = '100%';
         document.getElementById('progressLabel').textContent = 'Almost done...';
-        setTimeout(() => {
-          document.getElementById('progressWrap').classList.remove('visible');
-          showScreen('contact');
-        }, 350);
+        setTimeout(() => { document.getElementById('progressWrap').classList.remove('visible'); showScreen('contact'); }, 350);
       }
     }, 420);
   }
 
-  // ── Contact submit ─────────────────────────────────────────────────────────
   async function submitContact() {
     const name  = document.getElementById('input-name').value.trim();
     const email = document.getElementById('input-email').value.trim();
     const errEl = document.getElementById('contact-err');
-
-    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errEl.classList.add('visible');
-      return;
-    }
+    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.classList.add('visible'); return; }
     errEl.classList.remove('visible');
 
     const score = answers.reduce((s, v) => s + v, 0);
     const tier  = tierIndex(score);
     const tData = tiers[tier];
 
-    // Tier-colored ambient background
     document.getElementById('results-bg').className = 'results-bg ' + tData.bgClass;
 
-    // Populate results
     const badge = document.getElementById('tier-badge');
     badge.textContent = tData.label;
     badge.className   = 'tier-badge ' + tData.badgeClass;
@@ -1157,40 +809,51 @@
     document.getElementById('result-message').textContent  = tData.message;
     document.getElementById('result-cta').innerHTML        = tData.cta;
 
-    // Headwaters callout: tourism + score >= 26
-    if (industry === 'tourism' && tier >= 1) {
-      document.getElementById('hw-callout').classList.add('visible');
+    // Headwaters callout — always visible
+    document.getElementById('hw-callout').style.display = 'block';
+
+    // Buy button for low scorers
+    if (tier <= 1) document.getElementById('hw-buy-btn').style.display = 'inline-flex';
+
+    // Social proof for ready tiers
+    if (tier >= 2) {
+      document.getElementById('social-proof-text').textContent =
+        'Join the New England business owners who stopped guessing and started growing.';
     }
 
     showScreen('results');
 
-    // Trigger ring + count-up after two animation frames so the element is painted
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      // Ring fill
-      const ring = document.getElementById('score-ring-fill');
-      const circumference = 502.65; // 2π × r80
+      const ring         = document.getElementById('score-ring-fill');
+      const circumference = 552.92; // 2π × 88
       ring.style.stroke           = tData.ringColor;
       ring.style.strokeDashoffset = circumference - (score / 100) * circumference;
 
-      // Ease-out cubic count-up
-      const numEl    = document.getElementById('score-num');
-      const duration = 1300;
+      const numEl   = document.getElementById('score-num');
+      const duration = 1500;
       const start    = performance.now();
       function tick(now) {
         const t = Math.min((now - start) / duration, 1);
-        const e = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        const e = 1 - Math.pow(1 - t, 3);
         numEl.textContent = Math.round(e * score);
-        if (t < 1) requestAnimationFrame(tick);
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          numEl.textContent = score;
+          setTimeout(() => {
+            numEl.classList.add('count-complete');
+            ring.classList.add('ring-complete');
+          }, 60);
+        }
       }
       requestAnimationFrame(tick);
     }));
 
-    // Notify Matthew for all leads
     try {
       await fetch('/.netlify/functions/notify', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name, email, score, industry, tier: tData.label })
+        body: JSON.stringify({ name, email, score, industry, tier: tData.label })
       });
     } catch (_) { /* silent */ }
   }
