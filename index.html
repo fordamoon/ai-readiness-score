@@ -692,6 +692,33 @@
     }
   ];
 
+  // ── Consult form (tiers 2 & 3) ────────────────────────────────────────────
+  const CONSULT_FORM_HTML = `
+    <div id="consult-form-wrap" style="margin-top:4px;">
+      <p style="font-size:14px;color:#94A3B8;margin:0 0 16px;line-height:1.6;">
+        Leave your info below and we'll reach out within 24 hours. No pitch — just a real conversation.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <input id="cf-first" placeholder="First Name" style="background:#0C1829;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;color:#F1F5F9;font-family:inherit;outline:none;width:100%;box-sizing:border-box;" />
+        <input id="cf-last"  placeholder="Last Name"  style="background:#0C1829;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;color:#F1F5F9;font-family:inherit;outline:none;width:100%;box-sizing:border-box;" />
+      </div>
+      <div style="display:grid;gap:10px;margin-bottom:10px;">
+        <input id="cf-email" placeholder="Email Address" type="email" style="background:#0C1829;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;color:#F1F5F9;font-family:inherit;outline:none;width:100%;box-sizing:border-box;" />
+        <input id="cf-phone" placeholder="Phone (optional)" type="tel" style="background:#0C1829;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;color:#F1F5F9;font-family:inherit;outline:none;width:100%;box-sizing:border-box;" />
+        <select id="cf-challenge" style="background:#0C1829;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;color:#94A3B8;font-family:inherit;outline:none;width:100%;box-sizing:border-box;appearance:none;-webkit-appearance:none;">
+          <option value="">What's your biggest challenge?</option>
+          <option value="bookings">Getting more bookings</option>
+          <option value="roi">Understanding my marketing ROI</option>
+          <option value="followup">Automating my follow-up</option>
+          <option value="manual">Reducing manual work</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+      <div id="cf-err" style="display:none;font-size:13px;color:#F87171;margin-bottom:10px;">Please enter your name and a valid email address.</div>
+      <button onclick="submitConsultForm()" class="btn btn-teal" style="width:100%;justify-content:center;">Send My Info →</button>
+    </div>
+  `;
+
   // ── Tiers ──────────────────────────────────────────────────────────────────
   const tiers = [
     {
@@ -709,21 +736,22 @@
     {
       label: "You're Ready", badgeClass: 'tier-badge-2', ringColor: '#22C55E', bgClass: 'tier-2',
       headline: 'You have what it takes to start.',
-      message:  "Your systems and team are in solid shape. You're leaving revenue on the table by not moving on this now. Book a free consultation — we'll map out exactly where AI creates the most leverage in your business.",
-      cta:      `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-teal" style="display:inline-flex;">Book a Free Consultation →</a>`
+      message:  "Your systems and team are in solid shape. You're leaving revenue on the table by not moving on this now. Tell us a little about yourself — we'll map out exactly where AI creates the most leverage in your business.",
+      cta:      CONSULT_FORM_HTML
     },
     {
       label: "You're a Priority", badgeClass: 'tier-badge-3', ringColor: '#39FF14', bgClass: 'tier-3',
       headline: "You're built for this.",
-      message:  "You have the systems, the data, and the team to move fast. Businesses like yours see the biggest returns from AI — and we want to work with you. Book your priority call now. You'll be talking to Matthew directly.",
-      cta:      `<a href="${CALENDLY_URL}" target="_blank" class="btn btn-teal" style="display:inline-flex;">Book Your Priority Call →</a>`
+      message:  "You have the systems, the data, and the team to move fast. Businesses like yours see the biggest returns from AI — and we want to work with you. You'll be talking to Matthew directly.",
+      cta:      CONSULT_FORM_HTML
     }
   ];
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let currentQ = 0;
-  let answers  = [];
-  let industry = '';
+  let currentQ     = 0;
+  let answers      = [];
+  let industry     = '';
+  let quizLeadData = {};
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -809,6 +837,9 @@
     document.getElementById('result-message').textContent  = tData.message;
     document.getElementById('result-cta').innerHTML        = tData.cta;
 
+    // Store lead data for consult form submission
+    quizLeadData = { name, email, score, industry, tier: tData.label };
+
     // Headwaters callout — always visible
     document.getElementById('hw-callout').style.display = 'block';
 
@@ -854,6 +885,47 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, score, industry, tier: tData.label })
+      });
+    } catch (_) { /* silent */ }
+  }
+
+  async function submitConsultForm() {
+    const firstName = (document.getElementById('cf-first')?.value || '').trim();
+    const lastName  = (document.getElementById('cf-last')?.value  || '').trim();
+    const email     = (document.getElementById('cf-email')?.value || '').trim();
+    const phone     = (document.getElementById('cf-phone')?.value || '').trim();
+    const challenge = (document.getElementById('cf-challenge')?.value || '');
+    const errEl     = document.getElementById('cf-err');
+
+    if (!firstName || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (errEl) errEl.style.display = 'block';
+      return;
+    }
+    if (errEl) errEl.style.display = 'none';
+
+    const wrap = document.getElementById('consult-form-wrap');
+    if (wrap) {
+      wrap.innerHTML = `<div style="text-align:center;padding:20px 0;">
+        <div style="font-size:28px;margin-bottom:12px;">✓</div>
+        <p style="font-size:16px;font-weight:700;color:#F1F5F9;margin:0 0 8px;">You're on the list.</p>
+        <p style="font-size:14px;color:#94A3B8;margin:0;line-height:1.6;">We'll be in touch within 24 hours.<br>Check your email for next steps.</p>
+      </div>`;
+    }
+
+    try {
+      await fetch('/.netlify/functions/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:      `${firstName} ${lastName}`.trim(),
+          email,
+          phone,
+          challenge,
+          score:     quizLeadData.score,
+          industry:  quizLeadData.industry,
+          tier:      quizLeadData.tier,
+          source:    'consult-form'
+        })
       });
     } catch (_) { /* silent */ }
   }
